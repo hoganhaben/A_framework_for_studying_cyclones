@@ -1,0 +1,369 @@
+---
+title: "Examples for 'A framework for styding cyclones'"
+author: "JAH"
+date: "5/13/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+Here, we use data for three examples that illustrate the implementation of the reserach framework. 
+
+1. We compare response of stream biogeochemistry (NO3 and K) from two tropical headwater streams that differ in cyclone frequency.  The watershed in Fushan experiences a damaging cyclone (cat. 4 or greater) very frequenly (approximately annualy), and the watershed in Luquillo experiences them occasionally (approximately decadaly)
+
+2. We compare the GPP responses of three coastal marshes (Texas, New Jersey and Lousiana), where cyclone timing was a major infleuncing factor.
+
+3. We look at fish abundance data from four estuaries in Texas that expereinced differing storm strenght (rainfall total and windspeeds) during Hurricane Harvey in 2017. 
+
+```{r cars}
+### read in the data
+library(readr)
+
+########## LUQUILLO
+LUQ_K <- read_csv("C:/Users/hogie/Dropbox (Personal)/LUQ LITTERFALL for Hurricane Workshop 4.2019/CONCEPTUAL PAPER/Stream Nutrents_CHIUandMcDOWELL/LUQ_QSmonthlyK.csv",
+col_types = cols(Month_Yr = col_date(format = "%b-%y")))
+
+LUQ_NO3 <- read_csv("C:/Users/hogie/Dropbox (Personal)/LUQ LITTERFALL for Hurricane Workshop 4.2019/CONCEPTUAL PAPER/Stream Nutrents_CHIUandMcDOWELL/LUQ_QSmonthlyNO3.csv",
+col_types = cols(Month_Yr = col_date(format = "%b-%y")))
+
+########## FUSHAN
+FUS_K <- read_csv("C:/Users/hogie/Dropbox (Personal)/LUQ LITTERFALL for Hurricane Workshop 4.2019/CONCEPTUAL PAPER/Stream Nutrents_CHIUandMcDOWELL/FUSHAN_WS4_monthlyK.csv", col_types = cols(date = col_date(format = "%m/%d/%Y")))
+
+FUS_NO3 <- read_csv("C:/Users/hogie/Dropbox (Personal)/LUQ LITTERFALL for Hurricane Workshop 4.2019/CONCEPTUAL PAPER/Stream Nutrents_CHIUandMcDOWELL/FUSHAN_WS4_monthlyNO3.csv", col_types = cols(date = col_date(format = "%m/%d/%Y")))
+```
+
+# Stream Nitrate
+## LUQ
+### NO3 - N
+```{r pressure, echo=FALSE}
+library(ggplot2)
+
+g_LUQ_NO3 <- ggplot(aes(Month_Yr, `NO3 (ugN/L)`), data = LUQ_NO3) + geom_line() + geom_point(size = 0.5) +
+                 scale_x_date(date_labels = "%b-%Y") + xlab("") + 
+                 ylab(expression("stream nitrate"*"  ("* mu*"g N L"^-1* ")")) + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +  
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico")
+
+
+
+
+g_LUQ_NO3_2 <- ggplot(aes(Month_Yr, `NO3 (ugN/L)`), data = LUQ_NO3[LUQ_NO3$Month_Yr< "2005-01-01",]) + geom_line() + geom_point(size = 0.5) +
+                 scale_x_date(date_labels = "%b-%Y") + xlab("") + ylab("") +
+                theme_classic() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red") +  
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red") # + ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico")
+
+
+g_LUQ_NO3
+
+
+g_LUQ_NO3_2
+
+```
+
+### K 
+```{r}
+g_LUQ_K <- ggplot(aes(Month_Yr, `K (mg/L)`), data = LUQ_K) + geom_line() + geom_point() +     
+                 scale_x_date(date_labels = "%b-%Y") + xlab("") + 
+                 ylab(expression("stream potassium"*"  (mg K L"^-1* ")")) + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico")
+
+g_LUQ_K
+```
+
+## FUSHAN
+### NO3 - N
+```{r, echo=FALSE}
+
+g_FUS_NO3 <- ggplot(aes(date, `NO3 (ugN/L)`), data = FUS_NO3) + geom_line() + geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = " %Y") + xlab("") + 
+                 ylab("") + theme_minimal() +
+                 geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + 
+geom_vline(xintercept = as.Date("07-10-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-08-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-07-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-31-1996", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-15-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-18-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-31-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-02-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-18-2007", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-06-2007", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-12-2008", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-28-2008", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-12-2013", format = "%m-%d-%Y"), col = "red",  linetype="dotted")  + ylim(c(0, 700)) + theme(axis.title.x = element_blank()) #+ ggtitle("Watershed 4, Leinhuachi Experimental Forest, Taiwan")
+
+
+g_FUS_NO3_2 <- ggplot(aes(date, `NO3 (ugN/L)`), data = FUS_NO3[FUS_NO3$Year < 2005,]) + geom_line() + geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%b-%Y") + xlab("") + 
+                 ylab("") + theme_classic() +
+                 geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + 
+geom_vline(xintercept = as.Date("07-10-1994", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("08-08-1994", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("10-07-1994", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("07-31-1996", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("10-15-1998", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("07-18-2005", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("08-31-2005", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("10-02-2005", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("08-18-2007", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("10-06-2007", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("09-12-2008", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("09-28-2008", format = "%m-%d-%Y"), col = "red")+
+geom_vline(xintercept = as.Date("07-12-2013", format = "%m-%d-%Y"), col = "red") + ylim(c(0, 700)) + theme(axis.title.x = element_blank()) #+ ggtitle("Watershed 4, Leinhuachi Experimental Forest, Taiwan")
+
+
+g_FUS_NO3
+
+g_FUS_NO3_2
+```
+
+### K 
+```{r}
+g_FUS_K <- ggplot(aes(date, `K (mg/L)`), data = FUS_K) + geom_line() + geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%Y") + xlab("") + 
+                 ylab(expression("stream potassium"*"  (mg K L"^-1* ")")) + theme_minimal() +
+geom_vline(xintercept = as.Date("07-10-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-08-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-07-1994", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-31-1996", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-15-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-18-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-31-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-02-2005", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("08-18-2007", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("10-06-2007", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-12-2008", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-28-2008", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("07-12-2013", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ylim(c(0.0, 0.7)) + theme(axis.title.x = element_blank()) #+ ggtitle("Watershed 4, Leinhuachi Experimental Forest, Taiwan") 
+
+g_FUS_K
+```
+
+```{r}
+## ALL TOGETHER
+### need to subset LUQ data
+g_LUQ_NO3_short <- ggplot(aes(Month_Yr, `NO3 (ugN/L)`), data = LUQ_NO3[127:351,]) + geom_line() + 
+                 geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%Y") + xlab("") + 
+                 ylab("") + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +  
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ylim(c(0, 600)) + theme(axis.title.x = element_blank()) #+ ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico") 
+
+
+g_LUQ_K_short <- ggplot(aes(Month_Yr, `K (mg/L)`), data = LUQ_K[129:372,]) + geom_line() + 
+                 geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%Y") + xlab("") + 
+                 ylab("") + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ylim(c(0.0, 0.7)) + theme(axis.title.x = element_blank()) #+ ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico") 
+```
+
+```{r}
+####
+library(ggpubr)
+
+tiff()
+
+double_K <- ggarrange(g_LUQ_K_short, g_FUS_K + ylab(""), nrow = 2, labels = "AUTO")
+
+double_K <- annotate_figure(double_K, left = text_grob(expression("stream potassium"*"  (mg K L"^-1* ")"), rot = 90))
+
+double_K
+
+
+tiff(filename = "Streams_potassium.tiff", width = 18.5, height = 5.745, units = "cm",res = 600, compression = "lzw")
+double_K
+dev.off()
+
+
+```
+
+
+
+```{r}
+#### ggarrange 
+double_NO3 <- ggarrange(g_LUQ_NO3_short, g_FUS_NO3, nrow = 2, labels = "AUTO")
+
+double_NO3 <- annotate_figure(double_NO3, left = text_grob(expression("stream nitrate"*"  ("* mu*"g N L"^-1* ")"), rot = 90))
+
+double_NO3
+
+
+tiff(filename = "Streams_nitrate.tiff", width = 18.5, height = 5.745, units = "cm",res = 600, compression = "lzw")
+double_NO3
+dev.off()
+```
+
+
+```{r}
+##############################
+## After Bill McDowells email: 
+### 1) Plot only through 2004 (i.e. to 2015)
+
+## ALL TOGETHER
+### need to subset LUQ data
+g_LUQ_NO3_short <- ggplot(aes(Month_Yr, `NO3 (ugN/L)`), data = LUQ_NO3[127:351,]) + geom_line() + 
+                 geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%Y") + xlab("") + 
+                 ylab("") + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +  
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ylim(c(0, 600)) + theme(axis.title.x = element_blank()) #+ ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico") 
+
+
+g_LUQ_K_short <- ggplot(aes(Month_Yr, `K (mg/L)`), data = LUQ_K[129:372,]) + geom_line() + 
+                 geom_point(size = 0.75) +     
+                 scale_x_date(date_labels = "%Y") + xlab("") + 
+                 ylab("") + theme_minimal() +
+geom_vline(xintercept = as.Date("09-18-1989", format = "%m-%d-%Y"), col = "red",  linetype="dotted") +
+geom_vline(xintercept = as.Date("09-21-1998", format = "%m-%d-%Y"), col = "red",  linetype="dotted") + ylim(c(0.0, 0.7)) + theme(axis.title.x = element_blank()) #+ ggtitle("Quebrada Sonadora, Luquillo Experimental Forest, Puerto Rico") 
+```
+
+```{r}
+####
+library(ggpubr)
+
+tiff()
+
+double_K <- ggarrange(g_LUQ_K_short, g_FUS_K + ylab(""), nrow = 2, labels = "AUTO")
+
+double_K <- annotate_figure(double_K, left = text_grob(expression("stream potassium"*"  (mg K L"^-1* ")"), rot = 90))
+
+double_K
+
+
+tiff(filename = "Streams_potassium.tiff", width = 18.5, height = 5.745, units = "cm",res = 600, compression = "lzw")
+double_K
+dev.off()
+
+
+```
+
+
+
+```{r}
+#### ggarrange 
+double_NO3 <- ggarrange(g_LUQ_NO3_short, g_FUS_NO3, nrow = 2, labels = "AUTO")
+
+double_NO3 <- annotate_figure(double_NO3, left = text_grob(expression("stream nitrate"*"  ("* mu*"g N L"^-1* ")"), rot = 90))
+
+double_NO3
+
+###################
+double_NO3_2 <- ggarrange(g_LUQ_NO3_2, g_FUS_NO3_2, nrow = 2)
+
+double_NO3_2 <- annotate_figure(double_NO3_2, left = text_grob(expression("stream nitrate"*"  ("* mu*"g N L"^-1* ")"), rot = 90))
+
+double_NO3_2
+
+
+
+# 
+# tiff(filename = "Streams_nitrate.tiff", width = 18.5, height = 5.745, units = "cm",res = 600, compression = "lzw")
+# double_NO3
+# dev.off()
+# 
+
+
+
+tiff(filename = "Streams_nitrate_2_10.30.19.tiff", width = 18.5, height = 8.6205, units = "cm",res = 600, compression = "lzw")
+double_NO3_2
+dev.off()
+```
+
+# Marsh GPP
+```{r}
+library(readxl)
+marshGPP <-  read_xlsx(path = "C:/Users/hogie/Dropbox (Personal)/LUQ LITTERFALL for Hurricane Workshop 4.2019/CONCEPTUAL PAPER/Rusty & Chris Data/RustysGPP_LONG.xlsx", col_types = c("text", "date", "numeric", "numeric", "guess", "guess"))
+
+marshGPP$GPP <-  as.numeric(marshGPP$GPP)
+marshGPP$Hurricane <-  as.factor(marshGPP$Hurricane)
+
+```
+
+```{r}
+library(tidyverse)
+
+std_err <- function(x, na.rm=FALSE) {
+  if (na.rm) x <- na.omit(x)
+  sqrt(var(x)/length(x))
+}
+
+marsh_ordinalGPP <- marshGPP %>% filter(Hurricane == "NA") %>% group_by(Site, `Ordinal Date`) %>% summarise(avgGPP = mean(GPP, na.rm = T), sdGPP = sd(GPP, na.rm = T))
+```
+
+```{r}
+library(awtools)
+library(ggthemes)
+
+
+gg.RUSTY <- ggplot(aes(x = `Ordinal Date`, y=avgGPP), data = marsh_ordinalGPP) + geom_point(data = marshGPP[!marshGPP$Hurricane == "NA",], aes(x = `Ordinal Date`, y=GPP, color = Hurricane), size = 1) + geom_line(aes(x = `Ordinal Date`,  y=GPP, color = Hurricane), data = marshGPP[!marshGPP$Hurricane == "NA",], size = 0.5) + geom_point(size = 1.5) +  geom_errorbar(aes(ymin=avgGPP-sdGPP, ymax=avgGPP+sdGPP), data = marsh_ordinalGPP)  + facet_wrap(vars(Site)) + scale_x_continuous(breaks = c(1,91,182,274,366), labels=c("Jan","Apr","Jul","Oct", "Jan")) + scale_y_continuous(labels = function(x)x*12, limits = c(0,1)) + theme_minimal()  + theme(axis.title.x=element_blank()) + ylab(expression(paste("GPP (gC m"^-2*" d"^-1*")"))) + scale_color_manual(values = mpalette[1:6], breaks = c("Katrina", "Gustav", "Isaac", "Sandy", "Ike", "year after Ike")) #+ ggtitle("Productivity from Three USA Coastal Marshes ") 
+ 
+gg.RUSTY
+
+
+gg.RUSTY_NOV <- ggplot(aes(x = `Ordinal Date`, y=avgGPP), data = marsh_ordinalGPP) +    geom_ribbon(aes(ymin=avgGPP-sdGPP, ymax=avgGPP+sdGPP), data = marsh_ordinalGPP, fill = "grey70") + geom_point(data = marshGPP[!marshGPP$Hurricane == "NA",], aes(x = `Ordinal Date`, y=GPP, color = Hurricane), size = 2) + geom_line(aes(x = `Ordinal Date`,  y=GPP, color = Hurricane), data = marshGPP[!marshGPP$Hurricane == "NA",], size = 0.75) + facet_wrap(vars(Site)) + scale_x_continuous(breaks = c(1,91,182,274,366), labels=c("Jan","Apr","Jul","Oct", "Jan")) + scale_y_continuous(labels = function(x)x*12, limits = c(0,1)) + theme_classic()  + theme(axis.title.x=element_blank()) + ylab(expression(paste("GPP (gC m"^-2*" d"^-1*")"))) + scale_color_manual(values = colorblind_pal()(8)[c(1,2,4,5,6,8)], breaks = c("Katrina", "Gustav", "Isaac", "Sandy", "Ike", "year after Ike")) #+ ggtitle("Productivity from Three USA Coastal Marshes ") 
+ 
+gg.RUSTY_NOV 
+```
+
+# Fish Abundances
+```{r}
+library(readr)
+bag_seine <- read_csv("CONCEPTUAL PAPER/Rusty & Chris Data/Supplement.2F.BagSeine.csv",
+col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+
+delta_catch <- read_csv("CONCEPTUAL PAPER/Rusty & Chris Data/Supplement.2G.HistoricDeltaCatch.csv")
+
+
+```
+
+```{r}
+avg.bag_siene <- bag_seine %>% group_by(Estuary, Month) %>%  summarise(avg = mean(`Total Catch`, na.rm = T), se = std_err(`Total Catch`, na.rm = T))
+
+avg.delta_catch<- delta_catch[delta_catch$Period == "PreHarvey",] %>% group_by(Estuary.Name) %>% summarize(avg = mean(PerChangeAug.Sept), se = std_err(PerChangeAug.Sept, na.rm = T))
+
+avg.bag_siene <- bag_seine %>% group_by(Estuary, Month) %>%  summarise(avg = mean(`Total Catch`, na.rm = T), se = std_err(`Total Catch`, na.rm = T))
+                                                            avg.bag_siene$wind_speed <- c(rep(140, 6),  rep(100,6), rep(120,6), rep(60,6))
+```
+
+```{r}
+
+gg.ChrisPatrick1 <- ggplot(aes(x = `Month`, y=avg, color = wind_speed, shape = Estuary), data = avg.bag_siene) + geom_point(position=position_dodge(width=0.3)) + geom_line(position=position_dodge(width=0.3)) + geom_errorbar(aes(ymin=avg-se, ymax=avg+se), position=position_dodge(width=0.3), width=0.5)  + theme_classic()  + theme(axis.title.x=element_blank()) + ylab("Fish Abundance (Siene CPUE)") + scale_color_gradient(low = "blue", high = "red", guide = "none") + scale_x_continuous(breaks = c(7:12), labels=c("Jul","Aug","Sep","Oct", "Nov", "Dec")) + theme(legend.position = c(0.4, 0.85), legend.title = element_blank()) #+ ggtitle("Changes in Fish Abundance after Hurrican Harvey in Texas, 2017") 
+ 
+gg.ChrisPatrick1
+```
+
+```{r}
+avg.bag_siene2 <- bag_seine %>% group_by(Estuary, Date) %>%  summarise(avg = mean(`Total Catch`, na.rm = T), se = std_err(`Total Catch`, na.rm = T))
+```
+
+```{r}
+xxx <- cbind(delta_catch[delta_catch$Period == "Harvey",c(3,4)], rep(NA, 4))
+
+colnames(xxx) <- c("Estuary.Name", "avg", "se")
+
+Estuary_frame <-  rbind(rbind(cbind(xxx, period = rep("Windspeed (MPH)", 4))), rbind(cbind(avg.delta_catch, period = rep("2010-16", 4))))
+
+Estuary_frame$Estuary.Name <- factor(Estuary_frame$Estuary.Name, levels = c("San Antonio Bay", "Aransas Bay", "Corpus Christi Bay", "Upper Laguna Madre"))
+
+```
+
+```{r}
+gg.ChrisPatrick2 <- ggplot(aes(x = Estuary.Name, y = avg, fill = period), data = Estuary_frame) + geom_bar(stat = "identity", position = "dodge") + geom_errorbar(aes(ymin=avg-se, ymax=avg+se), position= "dodge", color = "#999999")  + theme_classic()  + theme(axis.title.x=element_blank()) + ylab("Propotion change CPUE Aug to Sep") + scale_fill_manual(values = c("#B22222", "#999999")) + theme(legend.position = c(0.8, 0.19), legend.title = element_blank()) + scale_x_discrete(labels = c("San Antonio Bay" = "San\nAntionio", "Aransas Bay" = "Aransas", "Corpus Christi Bay" = "Corpus\nChristi", "Upper Laguna Madre" = "Upper\nLaguna\nMadre")) + ylim(c(-1, 0.5)) #+ ggtitle("Changes in Fish Abundance after Hurrican Harvey in Texas, 2017")  
+ 
+gg.ChrisPatrick2
+```
+
+#####
+
+```{r}
+#tiff(filename = "FFFFF.tiff", width = 19.05, height = 19.05, units = "cm", res = 600, compression = "lzw")
+ggarrange(gg.RUSTY_NOV, double_NO3_2, ggarrange(gg.ChrisPatrick1, gg.ChrisPatrick2, ncol =2), nrow = 3)
+#dev.off()
+```
